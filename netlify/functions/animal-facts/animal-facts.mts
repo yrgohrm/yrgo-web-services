@@ -128,15 +128,17 @@ export const config: Config = {
 
 export default async (req: Request, context: Context) => {
 
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "GET, OPTION",
+  }
+
   // set up very liberal CORS policy
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Methods": "GET, OPTION",
-      }
+      headers: corsHeaders
     })
   }
 
@@ -152,9 +154,7 @@ export default async (req: Request, context: Context) => {
   return new Response(JSON.stringify(randomFact), {
     headers: {
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "GET, OPTION",
+      ...corsHeaders,
     }
   })
 }
