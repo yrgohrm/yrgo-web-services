@@ -127,8 +127,34 @@ export const config: Config = {
 }
 
 export default async (req: Request, context: Context) => {
+
+  // set up very liberal CORS policy
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "GET, OPTION",
+      }
+    })
+  }
+
+  if (req.method !== "GET") {
+    return new Response(null, {
+      status: 405
+    })
+  }
+
   const randomFactIndex = Math.floor(Math.random() * facts.length)
   const randomFact = { fact: facts[randomFactIndex] }
 
-  return new Response(JSON.stringify(randomFact), { headers: { "Content-type": "application/json" } })
+  return new Response(JSON.stringify(randomFact), {
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "GET, OPTION",
+    }
+  })
 }
