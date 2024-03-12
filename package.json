@@ -1,0 +1,19 @@
+{
+  "name": "yrgo-web-services",
+  "version": "1.0.0",
+  "description": "Some web services used while teaching at Yrgo",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hampus Ram <hampus.ram@educ.goteborg.se>",
+  "license": "MIT",
+  "devDependencies": {
+    "netlify-cli": "^17.19.2"
+  },
+  "dependencies": {
+    "@netlify/functions": "^2.6.0",
+    "tslint": "^6.1.3",
+    "typescript": "^5.4.2"
+  }
+}

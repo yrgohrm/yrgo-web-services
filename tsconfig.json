@@ -1,0 +1,39 @@
+{
+	"compilerOptions": {
+		"target": "ES2020",
+		"module": "ES2020",
+		"moduleResolution": "node",
+		"lib": [
+			"ES2020", "DOM"
+		],
+
+		"rootDir": "netlify/functions",
+		"outDir": "lib",
+
+		"strict": true,
+		"alwaysStrict": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"allowImportingTsExtensions": true,
+
+		"forceConsistentCasingInFileNames": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"downlevelIteration": true,
+		"declaration": true,
+
+		"pretty": true
+	},
+	"include": [
+		"typings/**/*",
+		"netlify/functions/**/*"
+	]
+}
