@@ -7,7 +7,7 @@ export const config: Config = {
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "GET, OPTION",
+  "Access-Control-Allow-Methods": "GET, POST",
 }
 
 export default async (req: Request) => {
