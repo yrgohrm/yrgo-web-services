@@ -40,5 +40,9 @@ export default async (req: Request, context: Context) => {
   </html>
   `
 
+  if (webpage.length > 1500) {
+    return new Response(null, { status: 413 })
+  }
+
   return new Response(webpage, { headers: { "Content-type": "text/html" } })
 }
