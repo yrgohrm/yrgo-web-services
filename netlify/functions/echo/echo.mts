@@ -25,7 +25,7 @@ export default async (req: Request) => {
     return post(req)
   }
 
-  return new Response(null, { status: 400 })
+  return error(400)
 }
 
 function get(req: Request) {
@@ -42,7 +42,7 @@ async function post(req: Request) {
 
 function dataToResponse(data: string | null): Response {
   if (data == null) {
-    return new Response(null, { status: 400 })
+    return error(400)
   }
 
   try {
@@ -51,6 +51,10 @@ function dataToResponse(data: string | null): Response {
     return new Response(json, { headers: { "Content-type": "application/json", ...corsHeaders } })
   }
   catch (err) {
-    return new Response(null, { status: 400 })
+    return error(400)
   }
+}
+
+function error(status: number): Response {
+  return new Response(null, { status, headers: corsHeaders })
 }
