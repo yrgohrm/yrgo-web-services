@@ -45,6 +45,11 @@ function dataToResponse(data: string | null): Response {
     return error(400)
   }
 
+  // do not allow arbitrarily long data to get sent back
+  if (data.length > 255) {
+    return error(413)
+  }
+
   try {
     const obj = JSON.parse(data)
     const json = JSON.stringify(obj)
