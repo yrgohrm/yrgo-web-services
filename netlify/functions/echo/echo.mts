@@ -1,3 +1,11 @@
+/*
+
+This endpoint will echo the JSON data that is sent to it either as post data 
+or in the query parameter "data".
+
+Example: https://yrgo-web-services.netlify.app/echo?data=[1,2,3]
+
+*/
 import type { Config } from "@netlify/functions"
 
 export const config: Config = {
