@@ -1,5 +1,5 @@
 import { tz, TZDate } from '@date-fns/tz'
-import { format, parse, constructNow, startOfWeek, endOfWeek, addDays, addWeeks, isAfter, isSaturday, isSunday } from "date-fns"
+import { format, parse, constructNow, startOfWeek, endOfWeek, addDays, addWeeks, isAfter, isSaturday, isSunday, getISOWeek } from "date-fns"
 import { xoshiro128ss } from "./nonrandom.ts"
 import { yaml } from "./apidoc.ts"
 
@@ -214,6 +214,12 @@ function get(req: Request) {
 
   if (!isAfter(end, start)) {
     return error(400);
+  }
+
+  // make each start week get their own random schedule
+  const count = getISOWeek(start);
+  for (let i = 0; i < count; ++i) {
+    nonRandom();
   }
 
   const data: Employee[] = []
