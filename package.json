@@ -4,6 +4,7 @@
   "description": "Some web services used while teaching at Yrgo",
   "type": "module",
   "scripts": {
+    "dev": "netlify dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint -c .eslintrc.cjs --ext .mts netlify/"
   },
