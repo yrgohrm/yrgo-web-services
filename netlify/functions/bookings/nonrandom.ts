@@ -15,7 +15,4 @@ function xoshiro128ss(a: number, b: number, c: number, d: number): () => number 
   }
 }
 
-// this will give us the very same random-looking sequence every time
-const nonRandom = xoshiro128ss(2516329459, 7397229, 3213755023, 2504815977);
-
-export { nonRandom }
+export { xoshiro128ss }

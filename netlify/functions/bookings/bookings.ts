@@ -1,6 +1,6 @@
 import { tz, TZDate } from '@date-fns/tz'
 import { format, parse, constructNow, startOfWeek, endOfWeek, addDays, addWeeks, isAfter, isSaturday, isSunday } from "date-fns"
-import { nonRandom } from "./nonrandom.ts"
+import { xoshiro128ss } from "./nonrandom.ts"
 import { yaml } from "./apidoc.ts"
 
 import type { Config } from "@netlify/functions"
@@ -53,7 +53,7 @@ const names = [
   "Nina Dahl",
 ];
 
-const getRandomElement = <T>(arr: T[]): T => arr[Math.floor(nonRandom() * arr.length)];
+const getRandomElement = <T>(arr: T[], randomGen: () => number): T => arr[Math.floor(randomGen() * arr.length)];
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -76,17 +76,17 @@ export default async (req: Request) => {
   return error(400)
 }
 
-function generateProfessions(): Profession[] {
+function generateProfessions(nonRandom: () => number): Profession[] {
   const professions: Profession[] = ["Carpenter", "Electrician", "Painter", "Mason", "Plumber"];
 
   if (nonRandom() < 0.2) {
-    return [getRandomElement(professions), getRandomElement(professions)];
+    return [getRandomElement(professions, nonRandom), getRandomElement(professions, nonRandom)];
   }
 
-  return [getRandomElement(professions)];
+  return [getRandomElement(professions, nonRandom)];
 }
 
-function generateOneWorkBooking(start: TZDate, professions: Profession[], percentage: Percentage): InternalBooking {
+function generateOneWorkBooking(start: TZDate, professions: Profession[], percentage: Percentage, nonRandom: () => number): InternalBooking {
 
   if (nonRandom() < 0.25) {
     start = addDays(start, Math.floor(nonRandom() * 4), { in: stockholm });
@@ -100,23 +100,23 @@ function generateOneWorkBooking(start: TZDate, professions: Profession[], percen
   }
 
   return {
-    activity: getRandomElement(professions),
+    activity: getRandomElement(professions, nonRandom),
     from: start,
     to: end,
     percentage,
-    status: getRandomElement(["Booked", "Preliminary"]),
+    status: getRandomElement(["Booked", "Preliminary"], nonRandom),
   };
 }
 
-function generateWorkBookings(start: TZDate, professions: Profession[]): InternalBooking[] {
+function generateWorkBookings(start: TZDate, professions: Profession[], nonRandom: () => number): InternalBooking[] {
   if (nonRandom() < 0.25) {
-    return [generateOneWorkBooking(start, professions, 50), generateOneWorkBooking(start, professions, 50)];
+    return [generateOneWorkBooking(start, professions, 50, nonRandom), generateOneWorkBooking(start, professions, 50, nonRandom)];
   }
 
-  return [generateOneWorkBooking(start, professions, 100)];
+  return [generateOneWorkBooking(start, professions, 100, nonRandom)];
 }
 
-function generateAbsentBooking(start: TZDate): InternalBooking[] {
+function generateAbsentBooking(start: TZDate, nonRandom: () => number): InternalBooking[] {
   const duration = Math.ceil(nonRandom() * 10 + 1);
   let end = addDays(start, duration, { in: stockholm });
 
@@ -155,15 +155,15 @@ function convertBooking(booking: InternalBooking): Booking {
   }
 }
 
-function generateBookings(start: TZDate, end: TZDate, professions: Profession[]): Booking[] {
+function generateBookings(start: TZDate, end: TZDate, professions: Profession[], nonRandom: () => number): Booking[] {
   let currentDate = start;
 
   const allBookings = [];
 
   while (isAfter(end, currentDate)) {
     const bookings = (nonRandom() < 0.2)
-      ? generateAbsentBooking(currentDate)
-      : generateWorkBookings(currentDate, professions);
+      ? generateAbsentBooking(currentDate, nonRandom)
+      : generateWorkBookings(currentDate, professions, nonRandom);
 
     currentDate = addDays(endDate(bookings), 1, { in: stockholm });
     while (isSaturday(currentDate) || isSunday(currentDate)) {
@@ -176,10 +176,10 @@ function generateBookings(start: TZDate, end: TZDate, professions: Profession[])
   return allBookings.map(convertBooking);
 }
 
-function generateEmployee(name: string, start: TZDate, end: TZDate): Employee {
-  const professions = generateProfessions();
+function generateEmployee(name: string, start: TZDate, end: TZDate, nonRandom: () => number): Employee {
+  const professions = generateProfessions(nonRandom);
 
-  const bookings = generateBookings(start, end, professions);
+  const bookings = generateBookings(start, end, professions, nonRandom);
 
   return {
     name,
@@ -189,6 +189,9 @@ function generateEmployee(name: string, start: TZDate, end: TZDate): Employee {
 }
 
 function get(req: Request) {
+  // this will give us the very same random-looking sequence every time
+  const nonRandom = xoshiro128ss(2516329459, 7397229, 3213755023, 2504815977);
+
   const url = new URL(req.url);
 
   const apidoc = url.searchParams.get("apidoc");
@@ -216,7 +219,7 @@ function get(req: Request) {
 
   const data: Employee[] = []
   for (const name of names) {
-    data.push(generateEmployee(name, start, end))
+    data.push(generateEmployee(name, start, end, nonRandom))
   }
 
   const json = JSON.stringify(data)
