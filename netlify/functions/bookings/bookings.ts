@@ -189,9 +189,6 @@ function generateEmployee(name: string, start: TZDate, end: TZDate, nonRandom: (
 }
 
 function get(req: Request) {
-  // this will give us the very same random-looking sequence every time
-  const nonRandom = xoshiro128ss(2516329459, 7397229, 3213755023, 2504815977);
-
   const url = new URL(req.url);
 
   const apidoc = url.searchParams.get("apidoc");
@@ -199,6 +196,8 @@ function get(req: Request) {
     return new Response(yaml, { status: 200, headers: { "Content-type": "application/json", ...corsHeaders } });
   }
 
+  // this will give us the very same random-looking sequence every time
+  const nonRandom = xoshiro128ss(2516329459, 7397229, 3213755023, 2504815977);
 
   const startParam = url.searchParams.get("start");
   const endParam = url.searchParams.get("end");
